@@ -6,6 +6,7 @@
 
 /*==================[macros and definitions]=================================*/
 
+/** */
 #define STACK_SIZE 128
 
 /** delay in milliseconds */
@@ -80,6 +81,8 @@ static void initHardware(void)
 	Board_Init();
 	SystemCoreClockUpdate();
 	SysTick_Config(SystemCoreClock / 1000);
+	NVIC_SetPriority(PendSV_IRQn,(1 << __NVIC_PRIO_BITS)-1); // Menor prioridad  100000b - 1 = 011111b
+	// El resto de prioridades se dan por defecto, con valor 0 (mayor prioridad)
 }
 
 /*==================[external functions definition]==========================*/
@@ -104,6 +107,15 @@ void task2(void)
 	}
 }
 
+void SysTick_Handler(void){
+	SCB->ICSR= SCB_ICSR_PENDSVSET_Msk;
+
+
+	__ISB();
+
+
+	__ISB();
+}
 
 int main(void)
 {

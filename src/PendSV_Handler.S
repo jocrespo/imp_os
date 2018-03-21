@@ -5,10 +5,10 @@
 	.data
 state: .word 0
 	.text
-	.global SysTick_Handler
+	.global PendSV_Handler
 	.extern sp1,sp2
 	.thumb_func
-SysTick_Handler:
+PendSV_Handler:
 	ldr r0, =state // r0 = &state
 	ldr r1,[r0] // r1=*r0
 	tbb [pc,r1]
