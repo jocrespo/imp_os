@@ -70,9 +70,10 @@ static void init_task(
 	uint32_t stack_len,/*long. del vector (en 4B)*/
 	uint32_t * sp) /*long. del vector (words)*/
 {
-	*sp = (uint32_t)(stack+stack_len-8); // Stack pointer
+	*sp = (uint32_t)(stack+stack_len-9); // Stack pointer
 	stack[stack_len-1] = 1<<24; // PSR, PSR.T=1
 	stack[stack_len-2] = (uint32_t)entry_point; // PC
+	stack[stack_len-9] = 0xFFFFFFF9; // PC
 };
 
 
@@ -114,7 +115,32 @@ void SysTick_Handler(void){
 	__ISB();
 
 
-	__ISB();
+	__DSB();
+}
+
+uint32_t get_Next_Context(uint32_t sp){
+
+	static int actual_task = -1;
+	uint32_t next_sp;
+
+	switch(actual_task){
+	case 1:
+		sp1 = sp;
+		next_sp = sp2;
+		actual_task = 2;
+		break;
+	case 2:
+		sp2 = sp;
+		next_sp = sp1;
+		actual_task = 1;
+		break;
+	default:
+		next_sp = sp1;
+		actual_task = 1;
+		break;
+	}
+
+	return next_sp;
 }
 
 int main(void)
