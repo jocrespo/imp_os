@@ -8,6 +8,12 @@
 
 #define STACK_SIZE 128
 
+/** delay in milliseconds */
+#define DELAY_MS 500
+/** led number to toggle */
+#define LED_1 0
+#define LED_2 1
+
 /*==================[internal data declaration]==============================*/
 
 /*==================[internal functions declaration]=========================*/
@@ -21,10 +27,13 @@
 
 
 /*==================[internal data definition]===============================*/
-
+/** @brief Stacks de la tareas*/
 static uint32_t pila1[STACK_SIZE];
 static uint32_t pila2[STACK_SIZE];
 
+/** @brief used for delay counter */
+static uint32_t pausems_count_1;
+static uint32_t pausems_count_2;
 
 /*==================[external data definition]===============================*/
 
@@ -33,6 +42,21 @@ uint32_t sp2;
 
 /*==================[internal functions definition]==========================*/
 
+static void pausems1(uint32_t t)
+{
+	pausems_count_1 = t;
+	while (pausems_count_1 != 0) {
+		__WFI();
+	}
+}
+
+static void pausems2(uint32_t t)
+{
+	pausems_count_2 = t;
+	while (pausems_count_2 != 0) {
+		__WFI();
+	}
+}
 
 static void start_os(void)
 {
@@ -60,12 +84,13 @@ static void initHardware(void)
 
 /*==================[external functions definition]==========================*/
 
-
 void task1(void)
 {
 	int i;
 	while (1) {
 		i++;
+		//Board_LED_Toggle(LED_1);
+		//pausems1(DELAY_MS);
 	}
 }
 
@@ -74,8 +99,11 @@ void task2(void)
 	int j;
 	while (1) {
 		j++;
+		//Board_LED_Toggle(LED_2);
+		//pausems2(DELAY_MS);
 	}
 }
+
 
 int main(void)
 {
